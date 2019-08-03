@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  server:
+    container_name: api-finance-system
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www
+    ports:
+      - "8088:80"
+    external_links:
+      - mysql-dev:mysql
+    networks:
+      - contenedores
+    environment:
+      - "VIRTUAL_HOST=test-pca"
+    expose:
+      - 80
+networks:
+  contenedores:
+    external: true
