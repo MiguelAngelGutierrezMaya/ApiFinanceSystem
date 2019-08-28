@@ -62,13 +62,21 @@ class PaymentController extends BaseController
         }
 
         $payments = Payment::where('financing_id', '=', $data["financing_id"])->orderBy('id', 'desc')->get();
+        $paymentsAmount = Payment::select('id', 'amount', 'paid_date')->where([
+            ['financing_id', '=', $data["financing_id"]],
+            ['state', '!=', 0]
+        ])->orderBy('id', 'desc')->get();
 
-        if(count($payments) == 0) {
+        if (count($payments) == 0) {
             $payments = [];
+        }
+        if (count($paymentsAmount) == 0) {
+            $paymentsAmount = [];
         }
 
         return $this->sendResponse([
-            'payments' => $payments
+            'payments' => $payments,
+            'paymentsAmount' => $paymentsAmount
         ], 'Result OK');
     }
 
