@@ -249,6 +249,7 @@ class FinancingController extends BaseController
             'pe3.id as deptor_id',
             'pe3.names as deptor_names',
             'pe3.surnames as deptor_surnames',
+            'pe3.cell_phone_number as deptor_cell_phone_number',
             'l2.address as deptor_address',
             'ar2.name as area_name_deptor_address',
             'c2.name as city_name_deptor_address'
