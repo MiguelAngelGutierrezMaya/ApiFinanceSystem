@@ -62,7 +62,7 @@ class PaymentController extends BaseController
         }
 
         $payments = Payment::where('financing_id', '=', $data["financing_id"])->orderBy('id', 'desc')->get();
-        $paymentsAmount = Payment::select('id', 'amount', 'paid_date')->where([
+        $paymentsAmount = Payment::select('id', 'amount', 'paid_date', 'state')->where([
             ['financing_id', '=', $data["financing_id"]],
             ['state', '!=', 0]
         ])->orderBy('id', 'desc')->get();
