@@ -23,8 +23,8 @@ Route::post('reset/showForm', 'API_Auth\ResetPasswordController@showResetForm');
 Route::post('reset', 'API_Auth\ResetPasswordController@reset');
 
 /**
-* User
-*/
+ * User
+ */
 Route::get('user/getCollectors', 'API\UserController@getCollectors');
 
 /**
@@ -40,6 +40,7 @@ Route::post('financing/postpone', 'API\FinancingController@postpone');
  * Payments
  */
 Route::get('payments', 'API\PaymentController@index');
+Route::get('payments/getPaymentById', 'API\PaymentController@getPaymentById');
 Route::post('payment/register', 'API\PaymentController@store');
 
 /**

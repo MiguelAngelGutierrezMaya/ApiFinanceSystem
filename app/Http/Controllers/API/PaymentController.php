@@ -81,6 +81,66 @@ class PaymentController extends BaseController
     }
 
     /**
+     * Get Payment by Id
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getPaymentById(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'payment_id' => 'required',
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Error de validacion.', $validator->errors(), 409);
+        }
+
+        $data = $request->all();
+
+        $user = User::where('id', '=', $data["user_id"])->get();
+
+        if (count($user) == 0) {
+            return $this->sendError('Usuario no encontrado.', ['no result'], 422);
+        } else {
+            $user = $user[0];
+        }
+
+        $user_id = $data["user_id"];
+        $verify = $this->verifySession($user_id);
+
+        if (!$verify["bool"]) {
+            return $this->sendError($verify["msj"], ['no result'], 422);
+        }
+
+        $payment = Payment::select('p.*', 'pe.names', 'pe.surnames')
+            ->from('payments as p')
+            ->join('persons as pe', 'p.person_id', '=', 'pe.id')
+            ->where('p.id', '=', $data["payment_id"])
+            ->get();
+
+        if (count($payment) == 0) {
+            return $this->sendError('Abono no encontrado.', ['no result'], 422);
+        } else {
+            $payment = $payment[0];
+            $payment->paid_date = date("Y-m-d", strtotime($payment->paid_date . "- 1 days"));
+
+            return $this->sendResponse([
+                'payment' => [
+                    'date_payment' => $payment->date_payment,
+                    'state' => $payment->state,
+                    'paid_date' => $payment->paid_date,
+                    'amount' => $payment->amount,
+                    'names' => $payment->names,
+                    'surnames' => $payment->surnames
+                ],
+            ], 'Result OK');
+        }
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
