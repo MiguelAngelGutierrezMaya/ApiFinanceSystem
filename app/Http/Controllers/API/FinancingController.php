@@ -470,6 +470,16 @@ class FinancingController extends BaseController
             $bool = true;
         }
 
+        $payments = Payment::where([
+            ['financing_id', '=', $financing->id],
+            ['state', '=', 1]
+        ])->get();
+
+        if(count($payments) > 0) {
+            $errors[] = 'Hay financiamientos pendientes por validar';
+            $bool = true;
+        }
+
         if (!$bool) {
             DB::beginTransaction();
 
