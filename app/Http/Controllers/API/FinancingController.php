@@ -476,7 +476,7 @@ class FinancingController extends BaseController
         ])->get();
 
         if(count($payments) > 0) {
-            $errors[] = 'Hay financiamientos pendientes por validar';
+            $errors[] = 'Hay abonos pendientes por validar';
             $bool = true;
         }
 
