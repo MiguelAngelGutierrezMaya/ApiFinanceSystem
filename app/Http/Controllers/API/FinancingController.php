@@ -381,13 +381,24 @@ class FinancingController extends BaseController
                         $row->save();
                         $add = true;
                     }
-                } else if ($frecuency == 1 && ($expected_value < $total_payments)) {
+                }
+                /*else if ($frecuency == 1 && ($expected_value < $total_payments)) {
                     $add = false;
-                } else {
+                }*/ else {
                     $add = true;
                 }
             } else if (($current_days % $frecuency) == 0) {
-                $add = true;
+                //$add = true;
+                if ($row->exception_state) {
+                    if ($row->expiration_exception_state <= $date) {
+                        $row->exception_state = 0;
+                        $row->expiration_exception_state = null;
+                        $row->save();
+                        $add = true;
+                    }
+                } else {
+                    $add = true;
+                }
             }
 
             if ($add) {
