@@ -403,6 +403,25 @@ class FinancingController extends BaseController
 
             if ($add) {
                 $i++;
+
+                $find_payments = Payment::where([
+                    ['financing_id', '=', $row->id_financing],
+                    ['date_payment', '=', $date]
+                ])
+                    ->orderBy('id', 'desc')
+                    ->get();
+
+                if (count($find_payments) != 0) {
+                    $find_payments = $find_payments[0];
+                    if ($find_payments->amount <= 0) {
+                        $state_payment = "Visita sin abono";
+                    } else {
+                        $state_payment = "Abonado";
+                    }
+                } else {
+                    $state_payment = 'Sin abonar';
+                }
+
                 $data_financings[$row->id_financing] = [
                     'id_temp' => $i,
                     'date_init' => $row->date_init,
@@ -420,7 +439,8 @@ class FinancingController extends BaseController
                     'current_days' => $current_days,
                     'back_days' => $expected_paid_days - $paid_days,
                     'ubication' => $row->customer_address . ', ' . $row->area_name,
-                    'state' => $row->state
+                    'state' => $row->state,
+                    'state_payment' => $state_payment
                 ];
             }
         }
