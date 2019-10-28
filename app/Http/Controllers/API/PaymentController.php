@@ -15,6 +15,7 @@ use App\FinancialVisit;
 use App\Note;
 use App\NoteFinancialVisit;
 use App\NotePayment;
+use App\Notifications\NotifyAdmin;
 
 class PaymentController extends BaseController
 {
@@ -314,6 +315,23 @@ class PaymentController extends BaseController
             $note_payment->payment_id = $payment->id;
             $note_payment->note_id = $note->id;
             $note_payment->save();
+
+            $numAbonos = DB::table('payments')->whereDate('created_at', date('Y-m-d'))->count();
+            $arrayData = [
+                'abonos' => [
+                    'numero' => $numAbonos,
+                    'ultimo_registro' => $payment
+                ]
+            ];
+
+            $users = User::where([
+                ['role_id', '<>', 2],
+                ['state', '=', 1]
+            ])->get();
+
+            foreach ($users as $user) {
+                User::findOrFail($user->id)->notify(new NotifyAdmin($arrayData));
+            }
 
             DB::commit();
         } catch (\Exception $e) {
