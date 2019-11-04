@@ -316,31 +316,41 @@ class PaymentController extends BaseController
             $note_payment->note_id = $note->id;
             $note_payment->save();
 
-            $numAbonos = DB::table('payments')->whereDate('created_at', date('Y-m-d'))->count();
-            $arrayData = [
-                'abonos' => [
-                    'numero' => $numAbonos,
-                    'ultimo_registro' => $payment
-                ]
-            ];
-
-            $users = User::where([
-                ['role_id', '<>', 2],
-                ['state', '=', 1]
-            ])->get();
-
-            foreach ($users as $user) {
-                User::findOrFail($user->id)->notify(new NotifyAdmin($arrayData));
-            }
-
             DB::commit();
+
+            $msj = $this->nofifyInsert($payment);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return $this->sendError('Error de BD.', ['Hubo un error al registrar en la base de datos, por favor intente nuevamente o comunicate con soporte ' . $e->getMessage()], 409);
         }
 
-        return $this->sendResponse(['success'], 'El abono ha sido registrado');
+        return $this->sendResponse(['success'], 'El abono ha sido registrado. ' . $msj);
+    }
+
+    /**
+     * Notify Insert Payment
+     */
+    public function nofifyInsert($payment)
+    {
+        $data = '{"current_date": "' . date("Y-m-d H:i:s") . '", "payment_id": ' . $payment->id . ', "token": "' . uniqid() . '"}';
+        $url = "https://financesystem-f81da.firebaseio.com/current_payments.json";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/plain'));
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        if ($response) {
+            return "Notificación en RT existosa";
+        } else {
+            return "Notificación en RT sin éxito";
+        }
     }
 
     /**
