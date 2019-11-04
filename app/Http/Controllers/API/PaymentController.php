@@ -334,7 +334,7 @@ class PaymentController extends BaseController
     public function nofifyInsert($payment)
     {
         $data = '{"current_date": "' . date("Y-m-d H:i:s") . '", "payment_id": ' . $payment->id . ', "token": "' . uniqid() . '"}';
-        $url = "https://financesystem-f81da.firebaseio.com/current_payments.json";
+        $url = config('firebase.config.databaseURL') . '/' . config('firebase.config.collection') . '.json';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -347,7 +347,7 @@ class PaymentController extends BaseController
         curl_close($ch);
 
         if ($response) {
-            return "Notificación en RT existosa";
+            return "Notificación en RT existosa " . $url;
         } else {
             return "Notificación en RT sin éxito";
         }
