@@ -347,7 +347,7 @@ class PaymentController extends BaseController
         curl_close($ch);
 
         if ($response) {
-            return "Notificación en RT existosa " . $url;
+            return "Notificación en RT existosa";
         } else {
             return "Notificación en RT sin éxito";
         }
