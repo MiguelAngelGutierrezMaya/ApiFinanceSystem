@@ -5,7 +5,7 @@ LABEL maintainer="miguel.gutierrez@correounivalle.edu.co"
 RUN rm /etc/apt/preferences.d/no-debian-php
 
 RUN apt-get update && apt-get install -y \
-        mysql-client \
+        mariadb-client \
         unzip \
         libfreetype6-dev \
         libjpeg62-turbo-dev \

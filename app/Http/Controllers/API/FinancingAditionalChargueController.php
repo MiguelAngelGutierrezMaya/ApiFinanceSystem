@@ -145,6 +145,11 @@ class FinancingAditionalChargueController extends BaseController
             $user_wallet = $user_wallet[0];
         }
 
+        if($financing->state == 'paid') {
+            $errors[] = "Error, el financiamiento ya está finalizado";
+            $bool = true;
+        }
+
         if (!$bool) {
             DB::beginTransaction();
 
@@ -171,6 +176,11 @@ class FinancingAditionalChargueController extends BaseController
                     $financing->balance -= $data["financing_aditional_chargue_amount"];
                     $wallet->amount -= $data["financing_aditional_chargue_amount"];
                     $financing_detail->discounts += $data["financing_aditional_chargue_amount"];
+
+                    /** Requerimiento solicitado (cambiar estado si el descuento es por el total del financiamiento) */
+                    if ($financing->balance <= 0) {
+                        $financing->state = 'paid';
+                    }
                 }
 
                 $financing_detail->daily_quota = $financing->total_value / $financing_detail->quotas;
