@@ -26,6 +26,7 @@ Route::post('reset', 'API_Auth\ResetPasswordController@reset');
  * User
  */
 Route::get('user/getCollectors', 'API\UserController@getCollectors');
+Route::get('user/clearCache', 'API\UserController@cacheClear');
 
 /**
  * Financings

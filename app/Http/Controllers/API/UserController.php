@@ -7,6 +7,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use Validator;
 use DateTime;
 use App\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends BaseController
@@ -142,5 +143,19 @@ class UserController extends BaseController
             $user->save();
             return ['bool' => $bool, 'msj' => $msj];
         }
+    }
+
+    /**
+     * Clear cache
+     */
+    public function cacheClear()
+    {
+        Artisan::call('config:cache');
+        Artisan::call('cache:clear');
+        Artisan::call('route:cache');
+        Artisan::call('route:clear');
+        Artisan::call('view:cache');
+        Artisan::call('view:clear');
+        return ['msj' => 'Cache limpiada satisfactoriamente'];
     }
 }
